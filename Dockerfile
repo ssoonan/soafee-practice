@@ -41,7 +41,7 @@ RUN vcs import src < src/fastdds_python.repos
 RUN colcon build
 
 # Source the setup file
-RUN echo "source /fastdds_python_ws/install/setup.zsh" >> /root/.zshrc
+RUN echo "source /fastdds_python_ws/install/setup.bash" >> /root/.bashrc
 
 # Set default command
 CMD ["/bin/bash"]
