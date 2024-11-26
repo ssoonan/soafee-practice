@@ -1,25 +1,22 @@
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, PublisherQos, DataWriterQos, TypeSupport, RELIABLE_RELIABILITY_QOS
-from VideoData import VideoData
-from common import topic_dict
+from VideoData import VideoDataPubSubType, VideoData  # Replace with your actual module and class names
 
 import cv2
 import sys
 
 
-def setup_fastdds_for_publisher(topic_name="VideoData"):
+def setup_fastdds():
     """Fast DDS 초기화 및 주요 객체 생성"""
     participant_qos = DomainParticipantQos()
-    participant = DomainParticipantFactory.get_instance().create_participant(0,
-                                                                             participant_qos)
+    participant = DomainParticipantFactory.get_instance().create_participant(0, participant_qos)
 
-    pubsub_type = getattr(topic_dict[topic_name], f"{topic_name}PubSubType")()
-    pubsub_type.set_name(topic_name)
-    pubsub_type_type_support = TypeSupport(pubsub_type)
-    participant.register_type(pubsub_type_type_support)
+    video_data_pubsub_type = VideoDataPubSubType()
+    video_data_pubsub_type.set_name("VideoData")
+    video_data_type_support = TypeSupport(video_data_pubsub_type)
+    participant.register_type(video_data_type_support)
 
     topic_qos = TopicQos()
-    topic = participant.create_topic(
-        topic_name, pubsub_type.get_name(), topic_qos)
+    topic = participant.create_topic("VideoTopic", video_data_pubsub_type.get_name(), topic_qos)
 
     publisher_qos = PublisherQos()
     publisher = participant.create_publisher(publisher_qos)
@@ -58,8 +55,13 @@ def send_frame(datawriter, frame):
     :param datawriter: Fast DDS DataWriter 객체
     :param frame: OpenCV 프레임
     """
+    ret, buffer = cv2.imencode('.jpg', frame)
+    if not ret:
+        print("Failed to encode frame")
+        return
+
     video_data = VideoData()
-    video_data.data(frame.tobytes())
+    video_data.data(buffer.tobytes())
     datawriter.write(video_data)
 
 
@@ -69,7 +71,7 @@ def main(source=0, display=True):
     :param source: 0 (웹캠) 또는 파일 경로
     :param display: True면 imshow 사용, False면 전송만
     """
-    participant, datawriter = setup_fastdds_for_publisher()
+    participant, datawriter = setup_fastdds()
     cap = setup_capture(source)
 
     try:
@@ -97,4 +99,4 @@ if __name__ == '__main__':
     # TODO: 카메라 동적으로 받을 수 있게 하기
     except IndexError:
         source = 0
-    main(source, display=True)
+    main(source, display=False)
