@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Upload Video</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5">Upload Video</h1>
+      <form
+        action="/upload"
+        method="post"
+        enctype="multipart/form-data"
+        class="mt-4"
+      >
+        <div class="form-group">
+          <label for="file">Choose Video File</label>
+          <input
+            type="file"
+            class="form-control-file"
+            name="file"
+            id="file"
+            accept="video/*"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+  </body>
+</html>

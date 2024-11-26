@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>비디오 재생</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <script>
+      function playVideo() {
+        // 비디오 스트림 시작
+        document.getElementById("original_video").src = "/video_feed_original";
+        document.getElementById("processed_video").src =
+          "/video_feed_processed";
+        // Play 버튼 숨기고 Again 버튼 표시
+        document.getElementById("play_button").classList.add("d-none");
+        document.getElementById("again_button").classList.remove("d-none");
+      }
+
+      function playAgain() {
+        // Clear the video sources
+        document.getElementById("original_video").src = "";
+        document.getElementById("processed_video").src = "";
+
+        // Add a timestamp to prevent caching
+        const timestamp = new Date().getTime();
+
+        // Restart the streams after a short delay
+        setTimeout(() => {
+          document.getElementById("original_video").src =
+            "/video_feed_original?t=" + timestamp;
+          document.getElementById("processed_video").src =
+            "/video_feed_processed?t=" + timestamp;
+        }, 100);
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5">비디오 재생</h1>
+      <!-- 재생 제어 버튼 -->
+      <button
+        id="play_button"
+        class="btn btn-primary mt-3 mb-3"
+        onclick="playVideo()"
+      >
+        Play
+      </button>
+      <button
+        id="again_button"
+        class="btn btn-secondary mt-3 mb-3 d-none"
+        onclick="playAgain()"
+      >
+        Again
+      </button>
+      <!-- 비디오 표시 영역 -->
+      <div class="row">
+        <div class="col-md-6">
+          <h3>원본 비디오</h3>
+          <img
+            id="original_video"
+            src=""
+            class="img-fluid"
+            alt="원본 비디오 스트림"
+          />
+        </div>
+        <div class="col-md-6">
+          <h3>처리된 비디오</h3>
+          <img
+            id="processed_video"
+            src=""
+            class="img-fluid"
+            alt="처리된 비디오 스트림"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
