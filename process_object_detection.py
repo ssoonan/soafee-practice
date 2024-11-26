@@ -1,7 +1,7 @@
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, PublisherQos, DataWriterQos, TypeSupport, RELIABLE_RELIABILITY_QOS
 
 from dds.ObjectDetection import ObjectDetectionResult, ObjectDetectionResultPubSubType, BoundingBox
-from lib.object_detector import object_detection
+from lib.object_detector import ObjectDetector
 from video_subscriber import read_frame, setup_fastdds_for_subscriber
 
 
@@ -64,12 +64,13 @@ def publish_object_detection_results(datawriter, box_results):
 def process_object_detection_and_publish():
     video_participant, datareader = setup_fastdds_for_subscriber()
     object_detection_participant, datawriter = setup_fastdds_for_object_detection()
+    Detector = ObjectDetector("yolov8n.pt")
     try:
         while True:
             frame = read_frame(datareader)
             if frame is None:
                 continue
-            box_results = object_detection(frame)
+            box_results = Detector.object_detection(frame)
             publish_object_detection_results(datawriter, box_results)
 
     except KeyboardInterrupt:
