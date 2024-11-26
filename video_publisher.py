@@ -1,6 +1,6 @@
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, PublisherQos, DataWriterQos, TypeSupport, RELIABLE_RELIABILITY_QOS
 # Replace with your actual module and class names
-from VideoData import VideoDataPubSubType, VideoData
+from dds.VideoData import VideoDataPubSubType, VideoData
 
 import cv2
 import sys

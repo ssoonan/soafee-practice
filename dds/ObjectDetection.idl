@@ -1,0 +1,16 @@
+module ObjectDetectionModule
+{
+    struct BoundingBox
+    {
+        int32 x;
+        int32 y;
+        int32 width;
+        int32 height;
+        string class_name;
+    };
+
+    struct ObjectDetectionResult
+    {
+        sequence<BoundingBox> boxes;
+    };
+};

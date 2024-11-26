@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, SubscriberQos, DataReaderQos, SampleInfo, TypeSupport
-from VideoData import VideoDataPubSubType, VideoData  # IDL로 생성된 Python 모듈
+from dds.VideoData import VideoDataPubSubType, VideoData  # IDL로 생성된 Python 모듈
 
 
 def setup_fastdds_for_subscriber():

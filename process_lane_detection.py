@@ -1,6 +1,6 @@
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, PublisherQos, DataWriterQos, TypeSupport, RELIABLE_RELIABILITY_QOS
 
-from LaneDetection import LaneDetectionResult, LaneDetectionResultPubSubType
+from dds.LaneDetection import LaneDetectionResult, LaneDetectionResultPubSubType
 from lib.lane_detector import enhanced_lane_detection
 from video_subscriber import read_frame, setup_fastdds_for_subscriber
 

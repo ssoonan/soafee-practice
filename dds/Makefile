@@ -57,10 +57,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws
+CMAKE_SOURCE_DIR = /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/dds
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws
+CMAKE_BINARY_DIR = /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/dds
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/CMakeFiles /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/dds/CMakeFiles /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/dds//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rtos-ubuntu/Desktop/project/soafee_practice/fastdds_python_ws/dds/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -160,45 +160,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named ObjectDetection
-
-# Build rule for target.
-ObjectDetection: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetection
-.PHONY : ObjectDetection
-
-# fast build rule for target.
-ObjectDetection/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetection.dir/build.make CMakeFiles/ObjectDetection.dir/build
-.PHONY : ObjectDetection/fast
-
-#=============================================================================
-# Target rules for targets named ObjectDetectionWrapper
-
-# Build rule for target.
-ObjectDetectionWrapper: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetectionWrapper
-.PHONY : ObjectDetectionWrapper
-
-# fast build rule for target.
-ObjectDetectionWrapper/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetectionWrapper.dir/build.make CMakeFiles/ObjectDetectionWrapper.dir/build
-.PHONY : ObjectDetectionWrapper/fast
-
-#=============================================================================
-# Target rules for targets named ObjectDetectionWrapper_swig_compilation
-
-# Build rule for target.
-ObjectDetectionWrapper_swig_compilation: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetectionWrapper_swig_compilation
-.PHONY : ObjectDetectionWrapper_swig_compilation
-
-# fast build rule for target.
-ObjectDetectionWrapper_swig_compilation/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetectionWrapper_swig_compilation.dir/build.make CMakeFiles/ObjectDetectionWrapper_swig_compilation.dir/build
-.PHONY : ObjectDetectionWrapper_swig_compilation/fast
 
 #=============================================================================
 # Target rules for targets named LaneDetection
@@ -238,6 +199,45 @@ LaneDetectionWrapper_swig_compilation: cmake_check_build_system
 LaneDetectionWrapper_swig_compilation/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/LaneDetectionWrapper_swig_compilation.dir/build.make CMakeFiles/LaneDetectionWrapper_swig_compilation.dir/build
 .PHONY : LaneDetectionWrapper_swig_compilation/fast
+
+#=============================================================================
+# Target rules for targets named ObjectDetection
+
+# Build rule for target.
+ObjectDetection: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetection
+.PHONY : ObjectDetection
+
+# fast build rule for target.
+ObjectDetection/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetection.dir/build.make CMakeFiles/ObjectDetection.dir/build
+.PHONY : ObjectDetection/fast
+
+#=============================================================================
+# Target rules for targets named ObjectDetectionWrapper
+
+# Build rule for target.
+ObjectDetectionWrapper: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetectionWrapper
+.PHONY : ObjectDetectionWrapper
+
+# fast build rule for target.
+ObjectDetectionWrapper/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetectionWrapper.dir/build.make CMakeFiles/ObjectDetectionWrapper.dir/build
+.PHONY : ObjectDetectionWrapper/fast
+
+#=============================================================================
+# Target rules for targets named ObjectDetectionWrapper_swig_compilation
+
+# Build rule for target.
+ObjectDetectionWrapper_swig_compilation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ObjectDetectionWrapper_swig_compilation
+.PHONY : ObjectDetectionWrapper_swig_compilation
+
+# fast build rule for target.
+ObjectDetectionWrapper_swig_compilation/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ObjectDetectionWrapper_swig_compilation.dir/build.make CMakeFiles/ObjectDetectionWrapper_swig_compilation.dir/build
+.PHONY : ObjectDetectionWrapper_swig_compilation/fast
 
 #=============================================================================
 # Target rules for targets named VideoData
