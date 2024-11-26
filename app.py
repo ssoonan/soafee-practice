@@ -4,6 +4,7 @@ import time
 
 from lane_detection_subscriber import LaneDetectionSubscriber
 from lib.lane_detector import draw_lane_lines, fill_lane_area
+from object_detection_subscriber import ObjectDetectionSubscriber
 from video_publisher import send_frame, setup_fastdds_for_publisher
 from video_subscriber import setup_fastdds_for_subscriber
 
@@ -13,6 +14,7 @@ publisher_participant, datawriter = setup_fastdds_for_publisher()
 subscriber_participant, datareader = setup_fastdds_for_subscriber()
 
 lane_detection_subscriber = LaneDetectionSubscriber()
+object_detection_subscriber = ObjectDetectionSubscriber()
 
 
 @app.route('/')
@@ -109,37 +111,58 @@ def generate_processed_frames():
 
 
 def process_frame(frame):
-    lane_data = lane_detection_subscriber.get_latest_data()
-    if lane_data is not None:
-        # Draw the lane lines
-        left_line = ((lane_data.left_lane().x1(), lane_data.left_lane().y1()),
-                     (lane_data.left_lane().x2(), lane_data.left_lane().y2()))
-        right_line = ((lane_data.right_lane().x1(), lane_data.right_lane().y1()),
-                      (lane_data.right_lane().x2(), lane_data.right_lane().y2()))
-
-        # Draw the detected lines on top of the filled frame
-        filled_frame = fill_lane_area(frame, left_line, right_line)
-        result_frame = draw_lane_lines(filled_frame, [left_line, right_line])
-        return result_frame
+    frame = process_frame_for_lane_detection(frame)
+    frame = process_frame_for_object_detection(frame)
     return frame
 
 
 def process_frame_for_lane_detection(frame):
-    # Example processing: convert to grayscale
-    processed_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Convert back to BGR if needed for encoding
-    processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_GRAY2BGR)
-    # You can insert your own processing code here
-    return processed_frame
+    lane_data = lane_detection_subscriber.get_latest_data()
+    if lane_data is None:
+        return frame
+    # Draw the lane lines
+    left_line = ((lane_data.left_lane().x1(), lane_data.left_lane().y1()),
+                 (lane_data.left_lane().x2(), lane_data.left_lane().y2()))
+    right_line = ((lane_data.right_lane().x1(), lane_data.right_lane().y1()),
+                  (lane_data.right_lane().x2(), lane_data.right_lane().y2()))
+
+    # Draw the detected lines on top of the filled frame
+    filled_frame = fill_lane_area(frame, left_line, right_line)
+    result_frame = draw_lane_lines(filled_frame, [left_line, right_line])
+    return result_frame
 
 
 def process_frame_for_object_detection(frame):
-    # Example processing: convert to grayscale
-    processed_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Convert back to BGR if needed for encoding
-    processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_GRAY2BGR)
-    # You can insert your own processing code here
-    return processed_frame
+    """
+    Process a frame with object detection data and overlay the results.
+
+    :param frame: OpenCV frame
+    :return: Processed frame with bounding boxes and class labels
+    """
+    # Get the latest object detection data
+    object_detection_data = object_detection_subscriber.get_latest_data()
+    if object_detection_data is None:
+        return frame
+
+    # Iterate over detected bounding boxes
+    for box in object_detection_data.boxes():
+        x = box.x()
+        y = box.y()
+        width = box.width()
+        height = box.height()
+        class_name = box.class_name()
+
+        # Draw bounding box
+        top_left = (x, y)
+        bottom_right = (x + width, y + height)
+        cv2.rectangle(frame, top_left, bottom_right, (0, 255, 0), 2)
+
+        # Draw class label
+        label_position = (x, y - 10)  # Slightly above the bounding box
+        cv2.putText(frame, class_name, label_position, cv2.FONT_HERSHEY_SIMPLEX,
+                    0.9, (36, 255, 12), 2)
+
+    return frame
 
 
 if __name__ == '__main__':

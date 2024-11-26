@@ -128,7 +128,7 @@ def draw_lane_lines(image, lines, color=[255, 0, 0], thickness=12):
     return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
 
 
-def enhanced_lane_detection(image):
+def enhanced_lane_detection(image: cv2.typing.MatLike):
     """
     Enhanced lane detection using color filtering and optimized Hough Transform.
     Parameters:
