@@ -38,24 +38,24 @@ def publish_object_detection_results(datawriter, box_results):
     object_detection_result = ObjectDetectionResult()
     box_sequence = object_detection_result.boxes()
     bounding_box = BoundingBox()
-    bounding_box.x(20)
-    bounding_box.y(30)
-    bounding_box.width(100)
-    bounding_box.height(200)
-    bounding_box.class_name("car")
-    box_sequence.push_back(bounding_box)
+    # bounding_box.x(20)
+    # bounding_box.y(30)
+    # bounding_box.width(100)
+    # bounding_box.height(200)
+    # bounding_box.class_name("car")
+    # box_sequence.push_back(bounding_box)
     
-    # for box in box_results:
-    #     # Create a new BoundingBox instance
-    #     bounding_box = BoundingBox()
-    #     bounding_box.x(box['x'])
-    #     bounding_box.y(box['y'])
-    #     bounding_box.width(box['width'])
-    #     bounding_box.height(box['height'])
-    #     bounding_box.class_name(box['class_name'])
+    for box in box_results:
+        # Create a new BoundingBox instance
+        bounding_box = BoundingBox()
+        bounding_box.x(box['x'])
+        bounding_box.y(box['y'])
+        bounding_box.width(box['width'])
+        bounding_box.height(box['height'])
+        bounding_box.class_name(box['class_name'])
 
-    #     # Append to the sequence
-    #     boxes_sequence.push_back(bounding_box)
+        # Append to the sequence
+        box_sequence.push_back(bounding_box)
 
     # Publish the data
     datawriter.write(object_detection_result)
