@@ -2,14 +2,17 @@ from flask import Flask, render_template, Response, request, redirect, url_for
 import cv2
 import time
 
+from lane_detection_subscriber import LaneDetectionSubscriber
+from lib.lane_detector import draw_lane_lines, fill_lane_area
 from video_publisher import send_frame, setup_fastdds_for_publisher
-from video_subscriber import read_frame, setup_fastdds_for_subscriber
+from video_subscriber import setup_fastdds_for_subscriber
 
 
 app = Flask(__name__)
 publisher_participant, datawriter = setup_fastdds_for_publisher()
 subscriber_participant, datareader = setup_fastdds_for_subscriber()
 
+lane_detection_subscriber = LaneDetectionSubscriber()
 
 
 @app.route('/')
@@ -66,7 +69,7 @@ def generate_original_frames():
             break
         # Encode frame as JPEG
         ret, buffer = cv2.imencode('.jpg', frame)
-        send_frame(datawriter, buffer)
+        send_frame(datawriter, frame)
         frame = buffer.tobytes()
         # Yield frame in bytes
         yield (b'--frame\r\n'
@@ -90,7 +93,7 @@ def generate_processed_frames():
             # When video ends, break the loop
             break
         # Process the frame (insert your OpenCV processing code here)
-        processed_frame = process_frame()
+        processed_frame = process_frame(frame)
         # Encode processed frame as JPEG
         ret, buffer = cv2.imencode('.jpg', processed_frame)
         frame = buffer.tobytes()
@@ -105,8 +108,20 @@ def generate_processed_frames():
     cap.release()
 
 
-def process_frame():
-    frame = read_frame(datareader)
+def process_frame(frame):
+    lane_data = lane_detection_subscriber.get_latest_data()
+    if lane_data is not None:
+        # Draw the lane lines
+        left_line = ((lane_data.left_lane().x1(), lane_data.left_lane().y1()),
+                     (lane_data.left_lane().x2(), lane_data.left_lane().y2()))
+        right_line = ((lane_data.right_lane().x1(), lane_data.right_lane().y1()),
+                      (lane_data.right_lane().x2(), lane_data.right_lane().y2()))
+
+        # Draw the detected lines on top of the filled frame
+        filled_frame = fill_lane_area(frame, left_line, right_line)
+        result_frame = draw_lane_lines(filled_frame, [left_line, right_line])
+        return result_frame
+    return frame
 
 
 def process_frame_for_lane_detection(frame):

@@ -1,0 +1,47 @@
+# Dockerfile
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic system dependencies
+RUN apt update && apt install -y \
+    wget \
+    curl \
+    git \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-dev \
+    libpython3-dev \
+    && apt clean && rm -rf /var/lib/apt/lists/*
+
+# Install colcon-common-extensions and vcstool using pip
+RUN python3 -m pip install -U colcon-common-extensions vcstool
+
+# Install additional dependencies for Fast DDS
+RUN apt update && apt install -y \
+    cmake \
+    libasio-dev \
+    libtinyxml2-dev \
+    swig \
+    && apt clean && rm -rf /var/lib/apt/lists/*
+
+# Create workspace directory
+WORKDIR /fastdds_python_ws/src
+
+# Download Fast DDS Python repos file
+RUN wget https://raw.githubusercontent.com/eProsima/Fast-DDS-python/main/fastdds_python.repos
+
+# Import repositories
+WORKDIR /fastdds_python_ws
+RUN vcs import src < src/fastdds_python.repos
+
+# Build Fast DDS Python
+RUN colcon build
+
+# Source the setup file
+RUN echo "source /fastdds_python_ws/install/setup.zsh" >> /root/.zshrc
+
+# Set default command
+CMD ["/bin/bash"]

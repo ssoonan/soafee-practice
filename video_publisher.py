@@ -1,14 +1,16 @@
 from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, PublisherQos, DataWriterQos, TypeSupport, RELIABLE_RELIABILITY_QOS
-from VideoData import VideoDataPubSubType, VideoData  # Replace with your actual module and class names
+# Replace with your actual module and class names
+from VideoData import VideoDataPubSubType, VideoData
 
 import cv2
 import sys
 
 
-def setup_fastdds():
+def setup_fastdds_for_publisher():
     """Fast DDS 초기화 및 주요 객체 생성"""
     participant_qos = DomainParticipantQos()
-    participant = DomainParticipantFactory.get_instance().create_participant(0, participant_qos)
+    participant = DomainParticipantFactory.get_instance().create_participant(0,
+                                                                             participant_qos)
 
     video_data_pubsub_type = VideoDataPubSubType()
     video_data_pubsub_type.set_name("VideoData")
@@ -16,7 +18,8 @@ def setup_fastdds():
     participant.register_type(video_data_type_support)
 
     topic_qos = TopicQos()
-    topic = participant.create_topic("VideoTopic", video_data_pubsub_type.get_name(), topic_qos)
+    topic = participant.create_topic(
+        "VideoTopic", video_data_pubsub_type.get_name(), topic_qos)
 
     publisher_qos = PublisherQos()
     publisher = participant.create_publisher(publisher_qos)
@@ -71,7 +74,7 @@ def main(source=0, display=True):
     :param source: 0 (웹캠) 또는 파일 경로
     :param display: True면 imshow 사용, False면 전송만
     """
-    participant, datawriter = setup_fastdds()
+    participant, datawriter = setup_fastdds_for_publisher()
     cap = setup_capture(source)
 
     try:

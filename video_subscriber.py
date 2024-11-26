@@ -4,7 +4,7 @@ from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, Su
 from VideoData import VideoDataPubSubType, VideoData  # IDL로 생성된 Python 모듈
 
 
-def setup_fastdds():
+def setup_fastdds_for_subscriber():
     """Fast DDS 초기화 및 주요 객체 생성"""
     participant_qos = DomainParticipantQos()
     participant = DomainParticipantFactory.get_instance().create_participant(0,
@@ -69,7 +69,7 @@ def main(display=True):
     메인 실행 함수.
     :param display: True면 imshow 사용, False면 데이터 수신만 수행
     """
-    participant, datareader = setup_fastdds()
+    participant, datareader = setup_fastdds_for_subscriber()
 
     try:
         while True:
