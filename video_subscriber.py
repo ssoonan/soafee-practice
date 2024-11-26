@@ -1,21 +1,24 @@
+from VideoData import VideoData
+from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, SubscriberQos, DataReaderQos, SampleInfo, TypeSupport
+from common import topic_dict
+
 import cv2
 import numpy as np
-from fastdds import DomainParticipantFactory, DomainParticipantQos, TopicQos, SubscriberQos, DataReaderQos, SampleInfo, TypeSupport
-from VideoData import VideoDataPubSubType, VideoData  # IDL로 생성된 Python 모듈
 
 
-def setup_fastdds():
+def setup_fastdds_for_subscriber(topic_name="VideoData"):
     """Fast DDS 초기화 및 주요 객체 생성"""
     participant_qos = DomainParticipantQos()
     participant = DomainParticipantFactory.get_instance().create_participant(0, participant_qos)
 
-    video_data_pubsub_type = VideoDataPubSubType()
-    video_data_pubsub_type.set_name("VideoData")
-    video_data_type_support = TypeSupport(video_data_pubsub_type)
-    participant.register_type(video_data_type_support)
+    pubsub_type = getattr(topic_dict[topic_name], f"{topic_name}PubSubType")()
+    pubsub_type.set_name(topic_name)
+    pubsub_type_type_support = TypeSupport(pubsub_type)
+    participant.register_type(pubsub_type_type_support)
 
     topic_qos = TopicQos()
-    topic = participant.create_topic("VideoTopic", "VideoData", topic_qos)
+    topic = participant.create_topic(
+        topic_name, pubsub_type.get_name(), topic_qos)
 
     subscriber_qos = SubscriberQos()
     subscriber = participant.create_subscriber(subscriber_qos)
@@ -35,9 +38,9 @@ def read_frame(datareader):
     sample_info = SampleInfo()
     video_data = VideoData()
 
-    if datareader.read_next_sample(video_data, sample_info) == 0:  # ReturnCode_t.RETCODE_OK
+    # ReturnCode_t.RETCODE_OK
+    if datareader.read_next_sample(video_data, sample_info) == 0:
         raw_data = video_data.data()
-
         if len(raw_data) == 0:
             print("Received empty data, skipping frame.")
             return None
@@ -67,16 +70,22 @@ def main(display=True):
     메인 실행 함수.
     :param display: True면 imshow 사용, False면 데이터 수신만 수행
     """
-    participant, datareader = setup_fastdds()
+    participant, datareader = setup_fastdds_for_subscriber()
 
     try:
         while True:
             frame = read_frame(datareader)
             if frame is None:
                 continue
-
             if display:
                 show_frame(frame)
+                from lib.lane_detector import enhanced_lane_detection
+                # process_subscriber_frame(frame, False)
+                frame2 = enhanced_lane_detection(frame)
+                cv2.imshow('Lane Detection', frame2)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    raise KeyboardInterrupt
+
     except KeyboardInterrupt:
         print("Subscriber terminated.")
     finally:
@@ -87,7 +96,7 @@ def main(display=True):
 
 if __name__ == '__main__':
     # 화면에 프레임 표시 및 데이터 수신
-    # main(display=True)
+    main(display=True)
 
     # 화면에 표시하지 않고 데이터만 수신
-    main(display=False)
+    # main(display=False)
