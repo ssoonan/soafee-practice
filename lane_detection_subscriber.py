@@ -1,7 +1,7 @@
 import threading
 import time
 from fastdds import DomainParticipantFactory, DomainParticipantQos, DataReaderQos, SampleInfo, TypeSupport, TopicQos, SubscriberQos
-from LaneDetection import LaneDetectionResult, LaneDetectionResultPubSubType
+from dds.LaneDetection import LaneDetectionResult, LaneDetectionResultPubSubType
 
 
 class LaneDetectionSubscriber:

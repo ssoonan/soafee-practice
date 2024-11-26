@@ -10,7 +10,7 @@ if _swig_python_version_info < (2, 7, 0):
 
 if __import__('os').name == 'nt': import win32api; win32api.LoadLibrary('LaneDetection.dll')
 if __package__ or '.' in __name__:
-    from . import _LaneDetectionWrapper
+    from .. import _LaneDetectionWrapper
 else:
     import _LaneDetectionWrapper
 

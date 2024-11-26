@@ -1,0 +1,10 @@
+venv
+
+CMakeFiles
+build
+__pycache__
+log
+
+data
+install
+src

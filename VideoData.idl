@@ -1,5 +1,0 @@
-module VideoModule {
-    struct VideoData {
-        sequence<octet> data;
-    };
-};
