@@ -1,0 +1,13 @@
+FROM seunmul/ultralytics:neoverse_DDS
+
+WORKDIR /home/
+COPY dds dds
+
+RUN cd dds && \
+    fastddsgen -python LaneDetection.idl ObjectDetection.idl VideoData.idl && \
+    cmake . && \
+    make
+
+COPY lib lib
+COPY video_publisher.py video_publisher.py
+COPY video_subscriber.py video_subscriber.py

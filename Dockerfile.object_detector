@@ -1,0 +1,6 @@
+# Dockerfile
+FROM ssoonan0770/soafee-practice
+
+COPY process_object_detection.py process_object_detection.py
+
+ENTRYPOINT [ "python3", "process_object_detection.py" ]
