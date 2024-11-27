@@ -43,5 +43,20 @@ RUN colcon build
 # Source the setup file
 RUN echo "source /fastdds_python_ws/install/setup.bash" >> /root/.bashrc
 
+RUN apt update && apt install -y openjdk-11-jdk \
+    && apt clean && rm -rf /var/lib/apt/lists/*
+
+
+# Install Fast-DDS-Gen
+WORKDIR /Fast-DDS/src
+RUN git clone --recursive https://github.com/eProsima/Fast-DDS-Gen.git fastddsgen && \
+    cd fastddsgen && \
+    ./gradlew assemble
+
+# Set up environment
+RUN echo "source /fastdds_python_ws/install/setup.zsh" >> /root/.zshrc
+ENV PATH="/Fast-DDS/src/fastddsgen/scripts:$PATH"
+
+
 # Set default command
 CMD ["/bin/bash"]
