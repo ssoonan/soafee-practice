@@ -1,12 +1,15 @@
 FROM seunmul/ultralytics:neoverse_DDS
 
-WORKDIR /home/
-COPY dds dds
+RUN mkdir -p dds
+COPY dds/LaneDetection.idl dds/
+COPY dds/ObjectDetection.idl dds/
+COPY dds/VideoData.idl dds/
+
+RUN bash -c "source /fastdds_python_ws/install/setup.bash && env"
 
 RUN cd dds && \
-    fastddsgen -python LaneDetection.idl ObjectDetection.idl VideoData.idl && \
-    cmake . && \
-    make
+    /home/ubuntu/Fast-DDS/src/fastddsgen/scripts/fastddsgen -python LaneDetection.idl ObjectDetection.idl VideoData.idl && \
+    bash -c "source /fastdds_python_ws/install/setup.bash && cmake . && make"
 
 COPY lib lib
 COPY video_publisher.py video_publisher.py

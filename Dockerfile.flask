@@ -1,15 +1,19 @@
-# Dockerfile
-FROM ssoonan0770/soafee-practice
+# Base image
+FROM ssoonan0770/soafee-practice:base
 
+# Copy application files
 COPY templates templates
-
-
 COPY app.py app.py
 COPY lane_detection_subscriber.py lane_detection_subscriber.py
 COPY object_detection_subscriber.py object_detection_subscriber.py
 
+# Set Flask environment variables
 ENV FLASK_APP=app.py \
     FLASK_RUN_HOST=0.0.0.0 \
     FLASK_RUN_PORT=5000
 
-ENTRYPOINT [ "flask", "run"]
+# Copy the entrypoint script
+COPY entrypoint.sh entrypoint.sh
+
+# Flask-specific ENTRYPOINT with fixed arguments
+ENTRYPOINT [ "./entrypoint.sh", "flask", "run" ]

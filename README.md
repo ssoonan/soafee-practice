@@ -45,11 +45,19 @@ cmake .
 make
 ```
 
+## docker build
+
+```bash
+sh build.sh # base image를 토대로 3개의 컨테이너 이미지 빌드
+
+```
+
 ## run
 
 ### worker
 
 각각 개별 터미널에서 실행
+
 ```bash
 source install/setup.zsh # or .bash
 python process_lane_detection.py
@@ -57,6 +65,7 @@ python process_object_detection.py
 ```
 
 ### flask
+
 ```bash
 flask run --debug
 ```

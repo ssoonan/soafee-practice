@@ -1,6 +1,7 @@
 # Dockerfile
-FROM ssoonan0770/soafee-practice
+FROM ssoonan0770/soafee-practice:base
 
 COPY process_object_detection.py process_object_detection.py
+COPY entrypoint.sh entrypoint.sh
 
-ENTRYPOINT [ "python3", "process_object_detection.py" ]
+ENTRYPOINT [ "./entrypoint.sh", "python3", "process_object_detection.py" ]
