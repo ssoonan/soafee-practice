@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lane-detector
+  namespace: soafee-practice2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lane-detector
+  template:
+    metadata:
+      labels:
+        app: lane-detector
+    spec:
+      containers:
+      - name: lane-detector
+        image: ssoonan0770/soafee-practice:lane_detector

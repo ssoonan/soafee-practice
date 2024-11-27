@@ -4,4 +4,7 @@ FROM ssoonan0770/soafee-practice:base
 COPY process_object_detection.py process_object_detection.py
 COPY entrypoint.sh entrypoint.sh
 
+COPY yolov8n.pt yolov8n.pt
+COPY yolov11n.pt yolov11n.pt
+
 ENTRYPOINT [ "./entrypoint.sh", "python3", "process_object_detection.py" ]

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  lane_detector:
+    image: ssoonan0770/soafee-practice:lane_detector
+    networks:
+      - soafee_network
+
+  object_detector:
+    image: ssoonan0770/soafee-practice:object_detector
+    networks:
+      - soafee_network
+
+  flask:
+    image: ssoonan0770/soafee-practice:flask
+    ports:
+      - "5500:5000" # 외부에서 5000번 포트를 통해 접근 가능
+    networks:
+      - soafee_network
+
+networks:
+  soafee_network:
+    driver: bridge
