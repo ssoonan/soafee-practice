@@ -24,8 +24,7 @@ frame_queue = Queue(maxsize=10)  # 큐 생성
 def send_frame_thread():
     while True:
         frame = frame_queue.get()
-        if frame is None:
-            break  # None을 받으면 스레드 종료
+        # 프레임이 None인지 확인하지 않고 계속 실행
         send_frame(datawriter, frame)
         frame_queue.task_done()
 
@@ -98,8 +97,8 @@ def generate_original_frames():
         # Delay to match original frame rate
         time.sleep(frame_delay)
     cap.release()
-    # 프레임 큐에 None을 넣어 send_frame_thread 종료 신호 전달
-    frame_queue.put(None)
+    # 프레임 큐에 None을 넣지 않음
+    # frame_queue.put(None)
 
 
 def generate_processed_frames():
