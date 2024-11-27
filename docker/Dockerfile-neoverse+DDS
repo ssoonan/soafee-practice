@@ -1,0 +1,55 @@
+FROM seunmul/ultralytics:neoverse
+
+# Install colcon-common-extensions and vcstool using pip
+RUN python3 -m pip install -U colcon-common-extensions vcstool
+
+# Install additional dependencies for Fast DDS
+RUN sudo apt update && sudo apt install -y \
+    cmake \
+    libasio-dev \
+    libtinyxml2-dev \
+    swig 
+
+# Create workspace directory
+WORKDIR /fastdds_python_ws/src
+RUN sudo chmod -R 777 /fastdds_python_ws
+RUN sudo chmod -R 777 /fastdds_python_ws/src
+
+# Download Fast DDS Python repos file
+RUN wget https://raw.githubusercontent.com/eProsima/Fast-DDS-python/main/fastdds_python.repos
+
+# Import repositories
+WORKDIR /fastdds_python_ws
+RUN vcs import src < src/fastdds_python.repos
+
+# Build Fast DDS Python
+RUN colcon build
+
+####################################################################################################
+
+# Install colcon-common-extensions and vcstool using pip
+RUN python3 -m pip install -U flask
+
+# Install jdk-11
+RUN sudo apt-get install -y \
+    openjdk-11-jdk \
+    openjdk-11-jdk-headless \
+    openjdk-11-jre \
+    openjdk-11-jre-headless
+
+RUN sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
+
+# Create Fast-DDS directory 
+RUN mkdir -p /home/ubuntu/Fast-DDS/src
+
+# Fast-DDS-Gen Clone and Build
+RUN cd /home/ubuntu/Fast-DDS/src && \
+    git clone --recursive https://github.com/eProsima/Fast-DDS-Gen.git fastddsgen && \
+    cd fastddsgen && \
+    ./gradlew assemble
+
+# Source the setup file
+RUN echo "source /fastdds_python_ws/install/setup.bash" >> /home/ubuntu/.bashrc
+
+WORKDIR /home/ubuntu
