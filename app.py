@@ -1,6 +1,8 @@
 from flask import Flask, render_template, Response, request, redirect, url_for
 import cv2
 import time
+import threading
+from queue import Queue
 
 from lane_detection_subscriber import LaneDetectionSubscriber
 from lib.lane_detector import draw_lane_lines, fill_lane_area
@@ -15,6 +17,21 @@ subscriber_participant, datareader = setup_fastdds_for_subscriber()
 
 lane_detection_subscriber = LaneDetectionSubscriber()
 object_detection_subscriber = ObjectDetectionSubscriber()
+
+frame_queue = Queue(maxsize=10)  # 큐 생성
+
+
+def send_frame_thread():
+    while True:
+        frame = frame_queue.get()
+        if frame is None:
+            break  # None을 받으면 스레드 종료
+        send_frame(datawriter, frame)
+        frame_queue.task_done()
+
+
+# send_frame 스레드 시작
+threading.Thread(target=send_frame_thread, daemon=True).start()
 
 
 @app.route('/')
@@ -69,16 +86,20 @@ def generate_original_frames():
         if not success:
             # When video ends, break the loop
             break
+        # 프레임을 큐에 넣기 (send_frame 스레드에서 처리)
+        if not frame_queue.full():
+            frame_queue.put(frame.copy())
         # Encode frame as JPEG
         ret, buffer = cv2.imencode('.jpg', frame)
-        send_frame(datawriter, frame)
-        frame = buffer.tobytes()
+        frame_bytes = buffer.tobytes()
         # Yield frame in bytes
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
         # Delay to match original frame rate
         time.sleep(frame_delay)
     cap.release()
+    # 프레임 큐에 None을 넣어 send_frame_thread 종료 신호 전달
+    frame_queue.put(None)
 
 
 def generate_processed_frames():
@@ -89,24 +110,20 @@ def generate_processed_frames():
     frame_delay = 1 / fps  # Delay between frames in seconds
 
     while True:
-        start_time = time.time()
         success, frame = cap.read()
         if not success:
             # When video ends, break the loop
             break
-        # Process the frame (insert your OpenCV processing code here)
+        # Process the frame
         processed_frame = process_frame(frame)
         # Encode processed frame as JPEG
         ret, buffer = cv2.imencode('.jpg', processed_frame)
-        frame = buffer.tobytes()
+        frame_bytes = buffer.tobytes()
         # Yield processed frame in bytes
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        # Calculate elapsed time and adjust delay
-        elapsed_time = time.time() - start_time
-        time_to_wait = frame_delay - elapsed_time
-        if time_to_wait > 0:
-            time.sleep(time_to_wait)
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        # Delay to match original frame rate
+        time.sleep(frame_delay)
     cap.release()
 
 
@@ -133,18 +150,10 @@ def process_frame_for_lane_detection(frame):
 
 
 def process_frame_for_object_detection(frame):
-    """
-    Process a frame with object detection data and overlay the results.
-
-    :param frame: OpenCV frame
-    :return: Processed frame with bounding boxes and class labels
-    """
-    # Get the latest object detection data
     object_detection_data = object_detection_subscriber.get_latest_data()
     if object_detection_data is None:
         return frame
 
-    # Iterate over detected bounding boxes
     for box in object_detection_data.boxes():
         x = box.x()
         y = box.y()
@@ -152,13 +161,11 @@ def process_frame_for_object_detection(frame):
         height = box.height()
         class_name = box.class_name()
 
-        # Draw bounding box
         top_left = (x, y)
         bottom_right = (x + width, y + height)
         cv2.rectangle(frame, top_left, bottom_right, (0, 255, 0), 2)
 
-        # Draw class label
-        label_position = (x, y - 10)  # Slightly above the bounding box
+        label_position = (x, y - 10)
         cv2.putText(frame, class_name, label_position, cv2.FONT_HERSHEY_SIMPLEX,
                     0.9, (36, 255, 12), 2)
 
